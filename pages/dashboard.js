@@ -28,29 +28,37 @@ import GaugeChart from '../charts/GaugeChart';
 import CollabSelect from '../selects/CollabSelect';
 import TrendsSelect from '../selects/TrendsSelect';
 import LineChart from '../charts/LineChart';
-import CollabUsers from './usersInfo/CollabUsers';
-import LeaderUsers from './usersInfo/LeaderUsers';
+import CollabUsers from '../components/usersInfo/CollabUsers';
+import LeaderUsers from '../components/usersInfo/LeaderUsers';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import dynamic from 'next/dynamic';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
+import { useContext } from 'react';
+import { Store } from '../utils/Store';
+import Cookies from 'js-cookie';
 
 const drawerWidth = 350;
 
-const Main = styled('main', { $shouldForwardProp: prop => prop !== 'open' })(({ theme, open }) => ({
-	flexGrow: 1,
-	padding: theme.spacing(2, 5),
-	transition: theme.transitions.create('margin', {
-		easing: theme.transitions.easing.sharp,
-		duration: theme.transitions.duration.leavingScreen,
-	}),
-	marginLeft: `-${drawerWidth}px`,
-	...(open && {
+const Main = styled('main', { $shouldForwardProp: prop => prop !== 'open' })(
+	({ theme, open }) => ({
+		flexGrow: 1,
+		padding: theme.spacing(4, 5),
 		transition: theme.transitions.create('margin', {
-			easing: theme.transitions.easing.easeOut,
-			duration: theme.transitions.duration.enteringScreen,
+			easing: theme.transitions.easing.sharp,
+			duration: theme.transitions.duration.leavingScreen,
 		}),
-		marginLeft: '0px',
-	}),
-}));
+		marginLeft: `-${drawerWidth}px`,
+		...(open && {
+			transition: theme.transitions.create('margin', {
+				easing: theme.transitions.easing.easeOut,
+				duration: theme.transitions.duration.enteringScreen,
+			}),
+			marginLeft: 0,
+		}),
+	})
+);
 
 const AppBar = styled(MuiAppBar, {
 	shouldForwardProp: prop => prop !== 'open',
@@ -88,16 +96,26 @@ const Item = styled(Paper)(({ theme }) => ({
 	flexDirection: 'column',
 }));
 
-export default function DashBoard() {
+function DashBoard() {
 	const [open, setOpen] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
 	const [anchorEl, setAnchorEl] = useState(null);
 
 	const classes = useStyles();
 	const theme = useTheme();
+	const router = useRouter();
+	const { state, dispatch } = useContext(Store);
+	const { userInfo } = state;
+
 	const largeScreen = useMediaQuery(theme.breakpoints.down('1750'));
 	const tabletScreen = useMediaQuery(theme.breakpoints.down('1200'));
-	const mobileScreen = useMediaQuery(theme.breakpoints.down('600'));
+	const mobileScreen = useMediaQuery(theme.breakpoints.down('620'));
+
+	useEffect(() => {
+		if (!userInfo) {
+			router.push('/');
+		}
+	}, []);
 
 	const handleDrawerToggler = () => {
 		setOpen(!open);
@@ -115,12 +133,14 @@ export default function DashBoard() {
 		setAnchorEl(null);
 	};
 
-	// const drawerClose = () => {
-	// 	setOpen(false);
-	// };
+	const logoutClickHandler = () => {
+		dispatch({ type: 'USER_LOGOUT' });
+		Cookies.remove('userInfo');
+		router.push('/');
+	};
 
 	return (
-		<Box sx={{ display: 'flex' }}>
+		<Box sx={{ display: 'flex', paddingTop: '4rem' }}>
 			<CssBaseline />
 			<ThemeProvider theme={colorTheme}>
 				<AppBar
@@ -138,18 +158,38 @@ export default function DashBoard() {
 						>
 							<MenuIcon />
 						</IconButton>
-						<IconButton
-							size="large"
-							aria-label="account of current user"
-							aria-controls="basic-menu"
-							aria-haspopup="true"
-							color="secondary"
-							aria-expanded={open ? 'true' : undefined}
-							onClick={handleClick}
-							sx={mobileScreen ? { position: 'fixed', right: 10 } : { position: 'relative' }}
+
+						<div
+							style={
+								mobileScreen
+									? {
+											display: 'flex',
+											alignItems: 'center',
+											padding: '0 50px',
+											position: 'fixed',
+                      right: 10
+									}
+									: undefined
+							}
 						>
-							<AccountCircle />
-						</IconButton>
+							{userInfo ? userInfo.name : <p>Login</p>}
+							<IconButton
+								size="large"
+								aria-label="account of current user"
+								aria-controls="basic-menu"
+								aria-haspopup="true"
+								color="secondary"
+								aria-expanded={open ? 'true' : undefined}
+								onClick={handleClick}
+								sx={
+									mobileScreen
+										? { position: 'fixed', right: 10 }
+										: { position: 'relative' }
+								}
+							>
+								<AccountCircle />
+							</IconButton>
+						</div>
 						<Menu
 							id="basic-menu"
 							anchorEl={anchorEl}
@@ -162,7 +202,9 @@ export default function DashBoard() {
 							<Box className={classes.menuItems} onClick={handleClose}>
 								<MenuItem className={classes.menuItem}>User Profile</MenuItem>
 								<MenuItem className={classes.menuItem}>Notification Settings</MenuItem>
-								<MenuItem className={classes.menuItem}>Log Out</MenuItem>
+								<MenuItem className={classes.menuItem} onClick={logoutClickHandler}>
+									Log Out
+								</MenuItem>
 							</Box>
 						</Menu>
 					</Toolbar>
@@ -194,7 +236,10 @@ export default function DashBoard() {
 					</DrawerHeader>
 
 					<List>
-						<ListItem className={classes.appBarListItems} sx={{ backgroundColor: '#FBEEE7' }}>
+						<ListItem
+							className={classes.appBarListItems}
+							sx={{ backgroundColor: '#FBEEE7' }}
+						>
 							<div className={classes.appBarListItemIcon}>
 								<ListItemIcon>
 									<PermMediaOutlinedIcon color="secondary" />
@@ -238,7 +283,6 @@ export default function DashBoard() {
 			<Main
 				open={tabletScreen ? !open : open}
 				sx={tabletScreen ? { marginLeft: 0 } : !{ marginLeft: '-350px' }}
-				// onClick={drawerClose}
 			>
 				<Grid
 					container
@@ -259,7 +303,9 @@ export default function DashBoard() {
 										<Grid item>
 											<Box sx={{ maxWidth: '260px' }}>
 												<GaugeChart count={50} />
-												<Typography sx={{ textAlign: 'center', transform: 'translateY(-55px)' }}>
+												<Typography
+													sx={{ textAlign: 'center', transform: 'translateY(-55px)' }}
+												>
 													Employees have Collaborated
 												</Typography>
 											</Box>
@@ -267,7 +313,9 @@ export default function DashBoard() {
 										<Grid item>
 											<Box sx={{ maxWidth: '260px' }}>
 												<GaugeChart count={24} />
-												<Typography sx={{ textAlign: 'center', transform: 'translateY(-55px)' }}>
+												<Typography
+													sx={{ textAlign: 'center', transform: 'translateY(-55px)' }}
+												>
 													Identified Vulnerabilities Mitigated
 												</Typography>
 											</Box>
@@ -275,7 +323,9 @@ export default function DashBoard() {
 										<Grid item>
 											<Box sx={{ maxWidth: '260px' }}>
 												<GaugeChart count={26} />
-												<Typography sx={{ textAlign: 'center', transform: 'translateY(-55px)' }}>
+												<Typography
+													sx={{ textAlign: 'center', transform: 'translateY(-55px)' }}
+												>
 													Activities Completed
 												</Typography>
 											</Box>
@@ -283,10 +333,17 @@ export default function DashBoard() {
 									</Grid>
 								</Item>
 							</Grid>
-							<Grid item xs={12} lg={largeScreen ? 6 : 4} mb={tabletScreen ? 5 : undefined}>
+							<Grid
+								item
+								xs={12}
+								lg={largeScreen ? 6 : 4}
+								mb={tabletScreen ? 5 : undefined}
+							>
 								<Item sx={{ cursor: 'pointer' }}>
 									<Box sx={{ display: 'flex', flexDirection: 'column' }}>
-										<Typography className={classes.titleFontSize}>Accomplishments</Typography>
+										<Typography className={classes.titleFontSize}>
+											Accomplishments
+										</Typography>
 										<Box className={classes.accomplishments}>
 											<StarIcon sx={{ fontSize: '330px', color: '#E8F8CF' }}></StarIcon>
 											<Typography sx={{ transform: 'translateY(-43px)' }}>
@@ -315,9 +372,16 @@ export default function DashBoard() {
 									</Box>
 								</Item>
 							</Grid>
-							<Grid item xs={12} lg={largeScreen ? 6 : 4} mb={tabletScreen ? 5 : undefined}>
+							<Grid
+								item
+								xs={12}
+								lg={largeScreen ? 6 : 4}
+								mb={tabletScreen ? 5 : undefined}
+							>
 								<Item sx={{ cursor: 'pointer' }}>
-									<Typography className={classes.titleFontSize}>Collaborator Lookup</Typography>
+									<Typography className={classes.titleFontSize}>
+										Collaborator Lookup
+									</Typography>
 									<Typography sx={{ marginBottom: '2px' }}>
 										Want to get more help? These users can help.
 									</Typography>
@@ -325,14 +389,24 @@ export default function DashBoard() {
 									<CollabUsers />
 								</Item>
 							</Grid>
-							<Grid item xs={12} lg={largeScreen ? 6 : 4} mb={tabletScreen ? 5 : undefined}>
+							<Grid
+								item
+								xs={12}
+								lg={largeScreen ? 6 : 4}
+								mb={tabletScreen ? 5 : undefined}
+							>
 								<Item sx={{ cursor: 'pointer' }}>
 									<Typography className={classes.titleFontSize}>Trends</Typography>
 									<TrendsSelect />
 									<LineChart />
 								</Item>
 							</Grid>
-							<Grid item xs={12} lg={largeScreen ? 6 : 4} mb={tabletScreen ? 5 : undefined}>
+							<Grid
+								item
+								xs={12}
+								lg={largeScreen ? 6 : 4}
+								mb={tabletScreen ? 5 : undefined}
+							>
 								<Item sx={{ cursor: 'pointer' }}>
 									<Typography className={classes.titleFontSize}>Leaderboard</Typography>
 									<LeaderUsers />
@@ -348,7 +422,9 @@ export default function DashBoard() {
 										<Grid item>
 											<Box sx={{ maxWidth: '260px' }}>
 												<GaugeChart count={50} />
-												<Typography sx={{ textAlign: 'center', transform: 'translateY(-55px)' }}>
+												<Typography
+													sx={{ textAlign: 'center', transform: 'translateY(-55px)' }}
+												>
 													Employees have Collaborated
 												</Typography>
 											</Box>
@@ -356,7 +432,9 @@ export default function DashBoard() {
 										<Grid item>
 											<Box sx={{ maxWidth: '260px' }}>
 												<GaugeChart count={24} />
-												<Typography sx={{ textAlign: 'center', transform: 'translateY(-55px)' }}>
+												<Typography
+													sx={{ textAlign: 'center', transform: 'translateY(-55px)' }}
+												>
 													Identified Vulnerabilities Mitigated
 												</Typography>
 											</Box>
@@ -364,7 +442,9 @@ export default function DashBoard() {
 										<Grid item>
 											<Box sx={{ maxWidth: '260px' }}>
 												<GaugeChart count={26} />
-												<Typography sx={{ textAlign: 'center', transform: 'translateY(-55px)' }}>
+												<Typography
+													sx={{ textAlign: 'center', transform: 'translateY(-55px)' }}
+												>
 													Activities Completed
 												</Typography>
 											</Box>
@@ -381,7 +461,9 @@ export default function DashBoard() {
 							>
 								<Item sx={{ cursor: 'pointer' }}>
 									<Box sx={{ display: 'flex', flexDirection: 'column' }}>
-										<Typography className={classes.titleFontSize}>Accomplishments</Typography>
+										<Typography className={classes.titleFontSize}>
+											Accomplishments
+										</Typography>
 										<Box className={classes.accomplishments}>
 											<StarIcon sx={{ fontSize: '330px', color: '#E8F8CF' }}></StarIcon>
 											<Typography sx={{ transform: 'translateY(-43px)' }}>
@@ -418,7 +500,9 @@ export default function DashBoard() {
 								mb={tabletScreen ? 5 : undefined}
 							>
 								<Item sx={{ cursor: 'pointer' }}>
-									<Typography className={classes.titleFontSize}>Collaborator Lookup</Typography>
+									<Typography className={classes.titleFontSize}>
+										Collaborator Lookup
+									</Typography>
 									<Typography sx={{ marginBottom: '2px' }}>
 										Want to get more help? These users can help.
 									</Typography>
@@ -452,3 +536,5 @@ export default function DashBoard() {
 		</Box>
 	);
 }
+
+export default dynamic(() => Promise.resolve(DashBoard), { ssr: false });

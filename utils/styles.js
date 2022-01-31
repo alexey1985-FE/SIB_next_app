@@ -66,15 +66,8 @@ const useStyles = makeStyles({
 		flexDirection: 'column',
 		justifyContent: 'center',
 	},
-	drawerHeader: {
-		display: 'flex',
-		flexDirection: 'column',
-		justifyContent: 'center',
-		alignItems: 'center',
-		padding: '20px 30px 20px 0',
-	},
 	appBarListItems: {
-		padding: '15px 15px 15px 50px',
+		// padding: '15px 15px 15px 50px',
 		display: 'flex',
 		alignItems: 'flex-start',
 		cursor: 'pointer',
@@ -107,10 +100,6 @@ const useStyles = makeStyles({
 		flexDirection: 'column',
 		alignItems: 'center',
 		position: 'relative',
-	},
-	titleFontSize: {
-		fontSize: '1.43rem',
-		marginBottom: 40
 	},
 	selectItems: {
 		backgroundColor: 'none',

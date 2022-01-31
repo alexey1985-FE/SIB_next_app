@@ -1,7 +1,6 @@
 {
   "name": "sibylity_app",
   "private": true,
-  "homepage": "https://alexey1985-FE.github.io/SIB_next_app",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

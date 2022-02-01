@@ -436,7 +436,7 @@ const DashBoard = () => {
               >
                 <Item sx={{ cursor: "pointer" }}>
                   <Typography
-                    sx={{ fontSize: "1.43rem", marginBottom: "56px" }}
+                    sx={{ fontSize: "1.43rem", marginBottom: "55px" }}
                   >
                     Trends
                   </Typography>
@@ -452,7 +452,7 @@ const DashBoard = () => {
               >
                 <Item sx={{ cursor: "pointer" }}>
                   <Typography
-                    sx={{ fontSize: "1.43rem", marginBottom: "30px" }}
+                    sx={{ fontSize: "1.43rem", marginBottom: "37px" }}
                   >
                     Leaderboard
                   </Typography>
@@ -585,7 +585,7 @@ const DashBoard = () => {
               >
                 <Item sx={{ cursor: "pointer" }}>
                   <Typography
-                    sx={{ fontSize: "1.43rem", marginBottom: "56px" }}
+                    sx={{ fontSize: "1.43rem", marginBottom: "55px" }}
                   >
                     Trends
                   </Typography>
@@ -596,7 +596,7 @@ const DashBoard = () => {
               <Grid item xs={12} lg={tabletScreen ? 12 : 6} xl={4}>
                 <Item sx={{ cursor: "pointer" }}>
                   <Typography
-                    sx={{ fontSize: "1.43rem", marginBottom: "30px" }}
+                    sx={{ fontSize: "1.43rem", marginBottom: "37px" }}
                   >
                     Leaderboard
                   </Typography>

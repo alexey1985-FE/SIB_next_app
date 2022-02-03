@@ -1,44 +1,19 @@
-/* eslint-disable @next/next/no-img-element */
-import React, { useState } from "react";
-import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import CssBaseline from "@mui/material/CssBaseline";
-import MuiAppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import ListItem from "@mui/material/ListItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import StarIcon from "@mui/icons-material/Star";
-import ListItemText from "@mui/material/ListItemText";
-import WorkOutlinedIcon from "@mui/icons-material/WorkOutlined";
-import PermMediaOutlinedIcon from "@mui/icons-material/PermMediaOutlined";
 import { styled } from "@mui/material/styles";
-import { colorTheme } from "../utils/colorTheme";
-import { ThemeProvider } from "@emotion/react";
-import { AccountCircle } from "@mui/icons-material";
+import { useMediaQuery } from "@material-ui/core";
+import { Grid, Link, Paper, Typography } from "@mui/material";
+import { Box } from "@mui/system";
 import useStyles from "../utils/styles";
-import NextLink from "next/link";
-import { Grid, Link, Menu, MenuItem, Paper } from "@mui/material";
+import StarIcon from "@mui/icons-material/Star";
 import GaugeChart from "../charts/GaugeChart";
-import CollabSelect from "../selects/CollabSelect";
-import TrendsSelect from "../selects/TrendsSelect";
 import LineChart from "../charts/LineChart";
 import CollabUsers from "../components/usersInfo/CollabUsers";
 import LeaderUsers from "../components/usersInfo/LeaderUsers";
-import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
+import CollabSelect from "../selects/CollabSelect";
+import TrendsSelect from "../selects/TrendsSelect";
+import NextLink from "next/link";
+import DashboardLayout from "../components/DashboardLayout";
 import { useContext } from "react";
 import { Store } from "../utils/Store";
-import Cookies from "js-cookie";
-import dynamic from "next/dynamic";
-// import dynamic from "next/dynamic";
 
 const drawerWidth = 350;
 
@@ -61,33 +36,6 @@ const Main = styled("main", { $shouldForwardProp: (prop) => prop !== "open" })(
   })
 );
 
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
-  width: theme.mixins.toolbar,
-  transition: theme.transitions.create(["margin", "width"], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: `${drawerWidth}px`,
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}));
-
-const DrawerHeader = styled("div")(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  ...theme.mixins.toolbar,
-  flexDirection: "column",
-  justifyContent: "center",
-  padding: "20px 40px 20px 0",
-}));
-
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(5, 4),
@@ -98,214 +46,16 @@ const Item = styled(Paper)(({ theme }) => ({
   flexDirection: "column",
 }));
 
-const DashBoard = () => {
-  const [open, setOpen] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-
+const MainPage = () => {
+  const { state } = useContext(Store);
+  const { open } = state;
   const classes = useStyles();
-  const theme = useTheme();
-  const router = useRouter();
-  const { state, dispatch } = useContext(Store);
-  const { userInfo } = state;
 
-  const largeScreen = useMediaQuery(theme.breakpoints.down("1750"));
-  const tabletScreen = useMediaQuery(theme.breakpoints.down("1200"));
-  const mobileScreen = useMediaQuery(theme.breakpoints.down("620"));
-
-  useEffect(() => {
-    if (!userInfo) {
-      router.push("/");
-    }
-  }, []);
-
-  const handleDrawerToggler = () => {
-    setOpen(!open);
-    setIsOpen(false);
-  };
-
-  const handleMenuToggler = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const logoutClickHandler = () => {
-    dispatch({ type: "USER_LOGOUT" });
-    router.push("/");
-    Cookies.remove("userInfo");
-  };
+  const largeScreen = useMediaQuery("(max-width:1750px)");
+  const tabletScreen = useMediaQuery("(max-width:1200px)");
 
   return (
-    <Box sx={{ display: "flex", paddingTop: "4rem" }}>
-      <CssBaseline />
-      <ThemeProvider theme={colorTheme}>
-        <AppBar
-          open={tabletScreen ? !open : open}
-          position="fixed"
-          elevation={5}
-          sx={tabletScreen ? { width: "100%" } : undefined}
-        >
-          <Toolbar sx={{ justifyContent: "space-between" }}>
-            <IconButton
-              color="secondary"
-              aria-label="open drawer"
-              onClick={handleDrawerToggler}
-              edge="start"
-            >
-              <MenuIcon />
-            </IconButton>
-
-            <div
-              style={
-                mobileScreen
-                  ? {
-                      display: "flex",
-                      alignItems: "center",
-                      padding: "0 50px",
-                      position: "fixed",
-                      right: 10,
-                    }
-                  : undefined
-              }
-            >
-              {userInfo && userInfo.name}
-              <IconButton
-                size="large"
-                aria-label="account of current user"
-                aria-controls="basic-menu"
-                aria-haspopup="true"
-                color="secondary"
-                aria-expanded={open ? "true" : undefined}
-                onClick={handleClick}
-                sx={
-                  mobileScreen
-                    ? { position: "fixed", right: 10 }
-                    : { position: "relative" }
-                }
-              >
-                <AccountCircle />
-              </IconButton>
-            </div>
-            <Menu
-              id="basic-menu"
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-              MenuListProps={{
-                "aria-labelledby": "basic-button",
-              }}
-            >
-              <Box className={classes.menuItems} onClick={handleClose}>
-                <MenuItem className={classes.menuItem}>User Profile</MenuItem>
-                <MenuItem className={classes.menuItem}>
-                  Notification Settings
-                </MenuItem>
-                <MenuItem
-                  className={classes.menuItem}
-                  onClick={logoutClickHandler}
-                >
-                  Log Out
-                </MenuItem>
-              </Box>
-            </Menu>
-          </Toolbar>
-        </AppBar>
-
-        <Drawer
-          sx={{
-            width: drawerWidth,
-            "& .MuiDrawer-paper": {
-              width: drawerWidth,
-              boxSizing: "border-box",
-            },
-          }}
-          variant={tabletScreen ? "temporary" : "persistent"}
-          anchor="left"
-          open={open}
-          onClose={handleDrawerToggler}
-        >
-          <DrawerHeader>
-            <NextLink href="/" passHref>
-              <Link>
-                <img
-                  width={"200"}
-                  src="https://cdn.sibylity.com/static/branding/sibylsoft/img/logo.svg"
-                  alt="logo"
-                />
-              </Link>
-            </NextLink>
-          </DrawerHeader>
-
-          <List>
-            <ListItem
-              className={classes.appBarListItems}
-              sx={{
-                backgroundColor: "#FBEEE7",
-                padding: "15px 15px 15px 50px",
-              }}
-            >
-              <div className={classes.appBarListItemIcon}>
-                <ListItemIcon>
-                  <PermMediaOutlinedIcon color="secondary" />
-                </ListItemIcon>
-                <ListItemText
-                  sx={{ color: "#C65D26" }}
-                  onClick={handleDrawerToggler}
-                >
-                  Dashboard
-                </ListItemText>
-              </div>
-            </ListItem>
-
-            <ListItem
-              className={classes.appBarListItems}
-              sx={{ padding: "15px 15px 15px 50px" }}
-              onClick={handleMenuToggler}
-            >
-              <div className={classes.appBarListItemIcon}>
-                <ListItemIcon>
-                  <WorkOutlinedIcon />
-                </ListItemIcon>
-                <ListItemText>Administrator</ListItemText>
-                {isOpen ? (
-                  <KeyboardArrowDownIcon color="secondary" />
-                ) : (
-                  <ChevronLeftIcon color="secondary" />
-                )}
-              </div>
-            </ListItem>
-            {isOpen && (
-              <div onClick={handleDrawerToggler}>
-                <ListItem
-                  className={classes.subItems}
-                  sx={{ paddingLeft: "130px" }}
-                >
-                  <ListItemText>Users</ListItemText>
-                </ListItem>
-                <ListItem
-                  className={classes.subItems}
-                  sx={{ paddingLeft: "130px" }}
-                >
-                  <ListItemText>Groups</ListItemText>
-                </ListItem>
-                <ListItem
-                  className={classes.subItems}
-                  sx={{ paddingLeft: "130px" }}
-                >
-                  <ListItemText>Settings</ListItemText>
-                </ListItem>
-              </div>
-            )}
-          </List>
-        </Drawer>
-      </ThemeProvider>
-
+    <DashboardLayout>
       <Main
         open={tabletScreen ? !open : open}
         sx={tabletScreen ? { marginLeft: 0 } : !{ marginLeft: "-350px" }}
@@ -607,8 +357,8 @@ const DashBoard = () => {
           )}
         </Grid>
       </Main>
-    </Box>
+    </DashboardLayout>
   );
 };
 
-export default dynamic(() => Promise.resolve(DashBoard), { ssr: false });
+export default MainPage;

@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import {
   Button,
   List,
@@ -21,6 +20,7 @@ import { Store } from "../utils/Store";
 import { motion } from "framer-motion";
 import NextLink from "next/link";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 
 const Login = () => {
   const {
@@ -40,7 +40,7 @@ const Login = () => {
 
   useEffect(() => {
     if (userInfo) {
-      router.push("/dashboard");
+      router.push("/mainpage");
     }
   }, []);
 
@@ -55,10 +55,9 @@ const Login = () => {
       dispatch({ type: "USER_LOGIN", payload: data });
       Cookies.set("userInfo", JSON.stringify(data));
 
-      router.push("/dashboard");
+      router.push("/mainpage");
 
       setError(getError(error));
-      console.log(error);
     } catch (error) {
       enqueueSnackbar(getError(error), {
         variant: "error",
@@ -79,8 +78,9 @@ const Login = () => {
         animate="shake"
       >
         <div className={classes.logo}>
-          <img
+          <Image
             width={"200"}
+            height={100}
             src="https://cdn.sibylity.com/static/branding/sibylsoft/img/logo.svg"
             alt="logo"
           />
@@ -169,7 +169,6 @@ const Login = () => {
       </motion.form>
     </FormLayout>
   );
-}
+};
 
 export default dynamic(() => Promise.resolve(Login), { ssr: false });
-

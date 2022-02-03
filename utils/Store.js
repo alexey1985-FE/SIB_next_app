@@ -10,6 +10,8 @@ const initialState = {
 
 function reducer(state, action) {
 	switch (action.type) {
+    case 'SET_OPEN':
+     return {...state, open: action.payload}
 		case 'USER_LOGIN':
 			return { ...state, userInfo: action.payload };
 		case 'USER_LOGOUT':

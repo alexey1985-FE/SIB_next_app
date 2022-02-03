@@ -11,8 +11,8 @@ const useStyles = makeStyles({
 	logo: {
 		display: 'flex',
 		justifyContent: 'center',
-		paddingTop: 60,
-		marginBottom: 30,
+		paddingTop: 30,
+		marginBottom: 20,
 	},
 	bold: {
 		fontWeight: 700,
@@ -67,7 +67,6 @@ const useStyles = makeStyles({
 		justifyContent: 'center',
 	},
 	appBarListItems: {
-		// padding: '15px 15px 15px 50px',
 		display: 'flex',
 		alignItems: 'flex-start',
 		cursor: 'pointer',

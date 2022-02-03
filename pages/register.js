@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import {
   Button,
   List,
@@ -20,6 +19,7 @@ import { useEffect } from "react";
 import { Store } from "../utils/Store";
 import { motion } from "framer-motion";
 import NextLink from "next/link";
+import Image from "next/image";
 
 export default function Register() {
   const {
@@ -38,7 +38,7 @@ export default function Register() {
 
   useEffect(() => {
     if (userInfo) {
-      router.push("/dashboard");
+      router.push("/mainpage");
     }
   }, []);
 
@@ -82,8 +82,9 @@ export default function Register() {
         animate="shake"
       >
         <div className={classes.logo}>
-          <img
+          <Image
             width={"200"}
+            height={100}
             src="https://cdn.sibylity.com/static/branding/sibylsoft/img/logo.svg"
             alt="logo"
           />
@@ -231,5 +232,3 @@ export default function Register() {
     </FormLayout>
   );
 }
-
-
